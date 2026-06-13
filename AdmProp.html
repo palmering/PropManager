@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropManager — Portafolio de Alquileres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg0: #0f1117;
+  --bg1: #171a22;
+  --bg2: #1e2130;
+  --bg3: #262a3a;
+  --bg4: #2e3347;
+  --border: rgba(255,255,255,0.08);
+  --border-hi: rgba(255,255,255,0.16);
+  --text0: #f0f2f8;
+  --text1: #9ba3bc;
+  --text2: #5c6480;
+  --accent: #4f7cff;
+  --accent-dim: rgba(79,124,255,0.15);
+  --green: #2dd4a0;
+  --green-dim: rgba(45,212,160,0.12);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.12);
+  --red: #ff5f6d;
+  --red-dim: rgba(255,95,109,0.12);
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  font-family: 'DM Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg0);color:var(--text0);min-height:100vh;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+.app{display:grid;grid-template-columns:220px 1fr;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:8px}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.logo-text{font-size:14px;font-weight:500;color:var(--text0)}
+.logo-sub{font-size:11px;color:var(--text2);margin-top:1px}
+
+.nav{padding:12px 8px}
+.nav-label{font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;padding:0 8px 6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r-sm);cursor:pointer;font-size:13px;color:var(--text1);transition:all .12s;margin-bottom:1px}
+.nav-item:hover{background:var(--bg3);color:var(--text0)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent)}
+.nav-item i{font-size:16px}
+
+.prop-scroll{flex:1;overflow-y:auto;padding:0 8px 12px}
+.prop-nav-label{font-size:10px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;padding:12px 10px 6px}
+.prop-nav-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;color:var(--text1);transition:all .12s;margin-bottom:1px}
+.prop-nav-item:hover{background:var(--bg3);color:var(--text0)}
+.prop-nav-item.active{color:var(--text0);background:var(--bg3)}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.on{background:var(--green)}
+.status-dot.off{background:var(--text2)}
+
+.sidebar-footer{padding:12px 8px;border-top:1px solid var(--border)}
+.btn-add-prop{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:1px solid var(--border-hi);border-radius:var(--r-sm);background:transparent;color:var(--text1);font-size:12px;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn-add-prop:hover{background:var(--bg3);color:var(--text0)}
+
+/* MAIN */
+.main{overflow-y:auto;background:var(--bg0);padding:28px 32px}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.topbar h2{font-size:18px;font-weight:500}
+.topbar-actions{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:13px;cursor:pointer;border:1px solid var(--border-hi);background:transparent;color:var(--text1);font-family:inherit;transition:all .12s}
+.btn:hover{background:var(--bg3);color:var(--text0)}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-primary:hover{opacity:.88;background:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{border-color:rgba(255,95,109,0.35);color:var(--red)}
+.btn-danger:hover{background:var(--red-dim);color:var(--red);border-color:rgba(255,95,109,0.6)}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r-md);padding:16px}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:500;color:var(--text0)}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* PROP GRID */
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px}
+.prop-card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:border-color .15s}
+.prop-card:hover{border-color:var(--border-hi)}
+.prop-card.selected{border-color:var(--accent)}
+.prop-card-add{border-style:dashed;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text2);min-height:110px;font-size:13px}
+.prop-card-add:hover{color:var(--text1)}
+.prop-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.prop-name{font-size:14px;font-weight:500;color:var(--text0)}
+.prop-addr{font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:4px}
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500}
+.badge-on{background:var(--green-dim);color:var(--green)}
+.badge-off{background:rgba(255,255,255,0.05);color:var(--text2)}
+.prop-meta{display:flex;gap:12px;font-size:11px;color:var(--text2);margin-bottom:10px}
+.prop-tenant-line{font-size:12px;color:var(--text1)}
+
+/* DETAIL VIEW */
+.detail-panel{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r-lg)}
+.detail-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.detail-title{font-size:17px;font-weight:500}
+.detail-addr{font-size:12px;color:var(--text2);margin-top:4px;display:flex;align-items:center;gap:5px}
+.detail-tabs{display:flex;padding:0 24px;border-bottom:1px solid var(--border)}
+.tab{padding:12px 0;margin-right:24px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s}
+.tab:hover{color:var(--text1)}
+.tab.active{color:var(--text0);border-bottom-color:var(--accent)}
+.detail-body{padding:24px}
+
+/* INFO GRIDS */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.info-field{display:flex;flex-direction:column;gap:4px}
+.info-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.info-value{font-size:13px;font-weight:500;color:var(--text0)}
+
+/* TENANT */
+.tenant-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;margin-bottom:14px}
+.tenant-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--accent);flex-shrink:0;font-family:'DM Mono',monospace}
+.tenant-name{font-size:14px;font-weight:500}
+.tenant-role{font-size:11px;color:var(--text2)}
+.tenant-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tenant-field{display:flex;flex-direction:column;gap:3px}
+.tenant-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.tenant-value{font-size:12px;font-weight:500;color:var(--text0)}
+
+/* CONTRACT BAR */
+.contract-strip{background:var(--green-dim);border:1px solid rgba(45,212,160,0.2);border-radius:var(--r-md);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.cs-left{}
+.cs-label{font-size:11px;color:var(--green)}
+.cs-dates{font-size:12px;color:var(--green);margin-top:2px;opacity:.8}
+.cs-bar{height:3px;background:rgba(45,212,160,0.2);border-radius:2px;margin-top:10px;overflow:hidden}
+.cs-fill{height:100%;background:var(--green);border-radius:2px}
+.cs-right{text-align:right;flex-shrink:0}
+.cs-payment-label{font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.06em}
+.cs-payment{font-size:20px;font-weight:500;color:var(--green)}
+
+/* DOCUMENTS */
+.doc-list{display:flex;flex-direction:column;gap:8px}
+.doc-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg2);cursor:pointer;transition:border-color .12s}
+.doc-row:hover{border-color:var(--border-hi)}
+.doc-icon{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.doc-icon-pdf{background:rgba(255,95,109,0.12);color:#ff5f6d}
+.doc-icon-doc{background:rgba(79,124,255,0.12);color:#4f7cff}
+.doc-icon-img{background:rgba(45,212,160,0.12);color:#2dd4a0}
+.doc-icon-other{background:var(--bg4);color:var(--text1)}
+.doc-name{font-size:13px;font-weight:500;flex:1;color:var(--text0)}
+.doc-meta{font-size:11px;color:var(--text2)}
+.doc-drop{border:1px dashed var(--border-hi);border-radius:var(--r-md);padding:28px;text-align:center;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;margin-top:12px}
+.doc-drop:hover{background:var(--bg2);color:var(--text1);border-color:var(--accent)}
+
+/* SECTION TITLE */
+.sec-title{font-size:13px;font-weight:500;color:var(--text0);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty i{font-size:36px;margin-bottom:12px;display:block;color:var(--text2)}
+.empty p{font-size:13px;margin-bottom:14px}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
+
+/* NOTE BOX */
+.note-box{background:var(--bg2);border-radius:var(--r-md);padding:14px;font-size:13px;color:var(--text1);border:1px solid var(--border)}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg1);border:1px solid var(--border-hi);border-radius:var(--r-lg);width:500px;max-height:85vh;overflow-y:auto;transform:translateY(10px);transition:transform .18s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:500}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;line-height:1;padding:2px;display:flex;align-items:center}
+.modal-close:hover{color:var(--text0)}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* FORMS */
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:12px;color:var(--text1);font-weight:500}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=text],input[type=number],input[type=date],input[type=email],select,textarea{
+  background:var(--bg2);border:1px solid var(--border-hi);border-radius:var(--r-sm);
+  padding:8px 10px;font-size:13px;color:var(--text0);font-family:'DM Sans',sans-serif;width:100%;
+  transition:border-color .12s;outline:none
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--bg2);color:var(--text0)}
+textarea{resize:vertical;min-height:72px}
+
+/* AI AREA */
+.ai-box{background:var(--bg2);border:1px dashed rgba(79,124,255,0.35);border-radius:var(--r-md);padding:16px}
+.ai-head{font-size:12px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px;color:var(--accent)}
+.ai-status{font-size:12px;color:var(--text2)}
+.ai-preview{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ai-field{background:var(--bg3);border-radius:var(--r-sm);padding:8px 10px;border:1px solid var(--border)}
+.ai-key{font-size:10px;color:var(--text2);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em}
+.ai-val{font-size:12px;font-weight:500;color:var(--text0)}
+
+/* LOADING DOTS */
+.dots{display:inline-flex;gap:3px;vertical-align:middle}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--text2);animation:blink 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* IPC PANEL */
+.ipc-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-bottom:16px}
+.ipc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+.ipc-title{font-size:12px;font-weight:500;color:var(--text0);display:flex;align-items:center;gap:6px}
+.ipc-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(79,124,255,0.15);color:var(--accent);font-weight:500}
+.ipc-current{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
+.ipc-cell{padding:12px 16px;border-right:1px solid var(--border)}
+.ipc-cell:last-child{border-right:none}
+.ipc-cell-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.ipc-cell-value{font-size:15px;font-weight:500;color:var(--text0)}
+.ipc-cell-value.highlight{color:var(--accent)}
+.ipc-cell-value.green{color:var(--green)}
+.ipc-cell-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.ipc-history{padding:12px 16px}
+.ipc-history-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.ipc-table{width:100%;border-collapse:collapse;font-size:11px}
+.ipc-table th{text-align:left;color:var(--text2);font-weight:500;padding:4px 8px 6px;border-bottom:1px solid var(--border)}
+.ipc-table td{padding:5px 8px;color:var(--text1);border-bottom:1px solid rgba(255,255,255,0.03)}
+.ipc-table tr:last-child td{border-bottom:none}
+.ipc-table tr.current-row td{color:var(--text0);font-weight:500;background:rgba(79,124,255,0.06)}
+.ipc-table td.rate-pos{color:var(--amber)}
+.ipc-toggle{font-size:11px;color:var(--accent);cursor:pointer;margin-top:8px;display:inline-flex;align-items:center;gap:4px}
+.ipc-toggle:hover{opacity:.8}
+.tenant-list-item{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .15s;margin-bottom:10px}
+.tenant-list-item:hover{border-color:var(--border-hi)}
+.tli-left{display:flex;align-items:center;gap:12px}
+.tli-name{font-size:14px;font-weight:500}
+.tli-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.tli-right{text-align:right}
+.tli-amount{font-size:14px;font-weight:500}
+.tli-expiry{font-size:11px;color:var(--text2);margin-top:2px}
+.tli-expiry.urgent{color:var(--amber)}
+.tli-expiry.critical{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon"><i class="ti ti-building-estate" aria-hidden="true"></i></div>
+      <div>
+        <div class="logo-text">PropManager</div>
+        <div class="logo-sub">Portafolio de alquileres</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-label">Menú</div>
+    <div class="nav-item active" onclick="setView('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Panel de control</div>
+    <div class="nav-item" onclick="setView('properties')"><i class="ti ti-building" aria-hidden="true"></i> Propiedades</div>
+    <div class="nav-item" onclick="setView('tenants')"><i class="ti ti-users" aria-hidden="true"></i> Inquilinos</div>
+    <div class="nav-item" onclick="setView('documents')"><i class="ti ti-folder" aria-hidden="true"></i> Documentos</div>
+  </div>
+
+  <div class="prop-scroll">
+    <div class="prop-nav-label">Propiedades</div>
+    <div id="sidebar-props"></div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="btn-add-prop" onclick="openAddProp()"><i class="ti ti-plus" aria-hidden="true"></i> Añadir propiedad</button>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="btn btn-sm" style="flex:1;justify-content:center" onclick="exportData()" title="Exportar copia de seguridad JSON"><i class="ti ti-download" aria-hidden="true"></i> Exportar</button>
+      <button class="btn btn-sm" style="flex:1;justify-content:center" onclick="importData()" title="Importar desde JSON"><i class="ti ti-upload" aria-hidden="true"></i> Importar</button>
+    </div>
+    <div id="save-status" style="font-size:10px;color:var(--text2);text-align:center;margin-top:6px;height:14px"></div>
+  </div>
+</aside>
+
+<main class="main" id="main"></main>
+
+</div>
+
+<div class="modal-overlay" id="modal-prop">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="prop-modal-title">Añadir nueva propiedad</span>
+      <button class="modal-close" onclick="closeModal('modal-prop')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="p-edit-id">
+      <div class="form-group"><label class="form-label">Nombre de la propiedad</label><input type="text" id="p-name" placeholder="ej. Torre de Oficinas Palermo"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Tipo</label>
+          <select id="p-type"><option>Comercial</option><option>Residencial</option><option>Industrial</option><option>Uso mixto</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Superficie (m²)</label><input type="number" id="p-surface" placeholder="ej. 450"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Dirección</label><input type="text" id="p-addr" placeholder="ej. Av. del Libertador 1234"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Ciudad</label><input type="text" id="p-city" placeholder="Buenos Aires"></div>
+        <div class="form-group"><label class="form-label">Barrio</label><input type="text" id="p-neigh" placeholder="ej. Palermo"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notas</label><textarea id="p-notes" placeholder="Detalles adicionales..."></textarea></div>
+      <div style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;padding-top:4px;border-top:1px solid var(--border);margin-top:4px">Impuestos y Servicios</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">ABL — Nro. de partida</label><input type="text" id="p-abl-partida" placeholder="ej. 123456"></div>
+        <div class="form-group"><label class="form-label">ABL — DV</label><input type="text" id="p-abl-dv" placeholder="ej. 7"></div>
+      </div>
+      <div class="form-group"><label class="form-label">AySA — Nro. de usuario</label><input type="text" id="p-aysa" placeholder="ej. 00123456"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Distribuidora eléctrica</label>
+          <select id="p-elec-co"><option value="Edesur">Edesur</option><option value="Edenor">Edenor</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Nro. de usuario</label><input type="text" id="p-elec-id" placeholder="ej. 00123456"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-prop')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProp()"><i class="ti ti-check" aria-hidden="true"></i> Guardar propiedad</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-tenant">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="tenant-modal-title">Añadir inquilino</span>
+      <button class="modal-close" onclick="closeModal('modal-tenant')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="ai-box">
+        <div class="ai-head"><i class="ti ti-sparkles" aria-hidden="true"></i> Lector de contratos con IA</div>
+        <div class="ai-status" id="ai-status">Sube un contrato de alquiler en PDF — Claude extraerá automáticamente todos los datos del inquilino y del contrato.</div>
+        <input type="file" accept=".pdf" id="lease-input" style="display:none" onchange="handleLeasePDF(event)">
+        <button class="btn btn-sm" style="margin-top:10px" onclick="document.getElementById('lease-input').click()"><i class="ti ti-upload" aria-hidden="true"></i> Subir PDF del contrato</button>
+        <div id="ai-preview" style="display:none"></div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--text2)">— o ingresar manualmente —</div>
+      <div class="form-group"><label class="form-label">Empresa / nombre del inquilino</label><input type="text" id="t-company" placeholder="ej. Acme S.A."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Titular del contrato</label><input type="text" id="t-holder" placeholder="Nombre completo"></div>
+        <div class="form-group"><label class="form-label">Garante</label><input type="text" id="t-guarantor" placeholder="Nombre completo"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Titular del contrato — CUIT/CUIL</label><input type="text" id="t-cuit" placeholder="ej. 20-12345678-9"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Inicio del contrato</label><input type="date" id="t-start"></div>
+        <div class="form-group"><label class="form-label">Fin del contrato</label><input type="date" id="t-end"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Pago mensual</label><input type="text" id="t-pay" placeholder="ej. 3500"></div>
+        <div class="form-group"><label class="form-label">Moneda</label><select id="t-cur"><option>USD</option><option>ARS</option><option>EUR</option></select></div>
+      </div>
+      <div class="form-row" style="grid-template-columns:2fr 1fr">
+        <div class="form-group"><label class="form-label">Depósito de garantía</label><input type="text" id="t-deposit" placeholder="ej. 7000"></div>
+        <div class="form-group"><label class="form-label">Moneda del depósito</label><select id="t-deposit-cur"><option>USD</option><option>ARS</option><option>EUR</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Frecuencia de actualización IPC</label>
+          <select id="t-ipc-freq"><option value="monthly">Mensual</option><option value="quarterly">Trimestral</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Email de contacto</label><input type="email" id="t-email" placeholder="inquilino@empresa.com"></div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input type="text" id="t-phone" placeholder="ej. 11 2345-6789"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-tenant')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTenant()"><i class="ti ti-check" aria-hidden="true"></i> Guardar inquilino</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-doc">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Añadir documento</span>
+      <button class="modal-close" onclick="closeModal('modal-doc')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre del documento</label><input type="text" id="d-name" placeholder="ej. Escritura de propiedad"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Categoría</label>
+          <select id="d-cat">
+            <option>Escritura</option><option>Plano</option><option>Contrato de alquiler</option>
+            <option>Seguro</option><option>Impuestos / ARBA</option><option>Foto</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Tipo de archivo</label>
+          <select id="d-type"><option>PDF</option><option>Word</option><option>Imagen</option><option>Otro</option></select>
+        </div>
+      </div>
+      <div class="doc-drop" onclick="pickDocFile()">
+        <i class="ti ti-cloud-upload" aria-hidden="true" style="font-size:26px;display:block;margin-bottom:8px"></i>
+        Haz clic para seleccionar archivo o arrastra y suelta<br><span style="font-size:11px;color:var(--text2)">PDF, Word, imágenes y más</span>
+      </div>
+      <div id="doc-file-preview" style="display:none;font-size:12px;color:var(--green);margin-top:4px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-doc')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveDoc()"><i class="ti ti-check" aria-hidden="true"></i> Guardar documento</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal" style="width:420px">
+    <div class="modal-header">
+      <span class="modal-title" style="display:flex;align-items:center;gap:8px">
+        <i class="ti ti-alert-triangle" style="color:var(--red);font-size:16px" aria-hidden="true"></i>
+        Eliminar propiedad
+      </span>
+      <button class="modal-close" onclick="closeModal('modal-delete')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="gap:10px">
+      <p style="font-size:13px;color:var(--text1)">Estás a punto de eliminar permanentemente:</p>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px">
+        <div id="delete-prop-name" style="font-size:14px;font-weight:500;color:var(--text0)"></div>
+        <div id="delete-prop-detail" style="font-size:12px;color:var(--text2);margin-top:3px"></div>
+      </div>
+      <p style="font-size:12px;color:var(--text2)">Esto eliminará el registro de la propiedad junto con todos los datos de sus inquilinos y documentos. Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-delete')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDelete()"><i class="ti ti-trash" aria-hidden="true"></i> Sí, eliminar propiedad</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://api.anthropic.com/v1/messages';
+
+// INDEC IPC monthly rates (source: INDEC official reports)
+// Key format: 'YYYY-MM', value: monthly % change
+const IPC = {
+  '2022-01':3.9,'2022-02':4.7,'2022-03':6.7,'2022-04':6.0,'2022-05':5.1,'2022-06':5.3,
+  '2022-07':7.4,'2022-08':7.0,'2022-09':6.2,'2022-10':6.3,'2022-11':4.9,'2022-12':5.1,
+  '2023-01':6.0,'2023-02':6.6,'2023-03':7.7,'2023-04':8.4,'2023-05':7.8,'2023-06':6.0,
+  '2023-07':6.3,'2023-08':12.4,'2023-09':12.7,'2023-10':8.3,'2023-11':12.8,'2023-12':25.5,
+  '2024-01':20.6,'2024-02':13.2,'2024-03':11.0,'2024-04':8.8,'2024-05':4.2,'2024-06':4.6,
+  '2024-07':4.0,'2024-08':4.2,'2024-09':3.5,'2024-10':2.4,'2024-11':2.4,'2024-12':2.7,
+  '2025-01':2.2,'2025-02':2.4,'2025-03':3.7,'2025-04':3.0,'2025-05':3.3,'2025-06':1.6,
+  '2025-07':2.7,'2025-08':2.3,'2025-09':2.1,'2025-10':2.4,'2025-11':2.5,'2025-12':2.4,
+  '2026-01':2.9,'2026-02':2.9,'2026-03':3.4,'2026-04':2.6
+};
+
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTH_NAMES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// Returns 'YYYY-MM' key for the IPC rate that applies to a given calendar month.
+// Rule: the IPC for month M uses the rate published for M-2.
+function applicableIpcKey(year, month) {
+  // month is 1-based
+  let m = month - 2, y = year;
+  if (m < 1) { m += 12; y -= 1; }
+  return `${y}-${String(m).padStart(2,'0')}`;
+}
+
+// Build the full adjustment schedule from contract start to today.
+//
+// MONTHLY: each month one adjustment is applied using the IPC rate from 2 months prior.
+//
+// QUARTERLY: each quarter compresses 3 consecutive monthly IPC rates (each lagged 2 months).
+//   Example: adjustment in Jul 2025 uses:
+//     May 2025 (lag→Mar 2025: 3.7%) × Jun 2025 (lag→Apr 2025: 3.0%) × Jul 2025 (lag→May 2025: 3.3%)
+//     = 1.037 × 1.030 × 1.033 − 1 = +10.2% cumulative quarter factor
+//
+// Returns array of schedule rows, each with:
+//   label, ipcMonths[], rates[], quarterFactor, cumFactor, adjustedPay
+function buildIpcSchedule(startStr, basePay, freq) {
+  const base = parseFloat(basePay) || 0;
+  if (!base || !startStr) return [];
+
+  const [sy, sm] = startStr.split('-').map(Number);
+  const now = new Date();
+  const nowYear = now.getFullYear(), nowMonth = now.getMonth() + 1;
+
+  const step = freq === 'quarterly' ? 3 : 1;
+  const schedule = [];
+  let cumFactor = 1.0;
+
+  // First adjustment happens after the first interval from contract start
+  let y = sy, m = sm + step;
+
+  while (true) {
+    // normalise month overflow
+    while (m > 12) { m -= 12; y += 1; }
+    // don't go beyond current month
+    if (y > nowYear || (y === nowYear && m > nowMonth)) break;
+
+    if (freq === 'quarterly') {
+      // Collect the 3 individual monthly rates that make up this quarter.
+      // The quarter ending in month m covers months (m-2), (m-1), m — each lagged by 2.
+      const months = [m-2, m-1, m];
+      const ipcMonths = months.map(mo => {
+        let my = y, mm = mo;
+        while (mm < 1) { mm += 12; my -= 1; }
+        while (mm > 12) { mm -= 12; my += 1; }
+        return { adjYear: my, adjMonth: mm, ipcKey: applicableIpcKey(my, mm) };
+      });
+
+      // Check all 3 rates are available
+      const rateEntries = ipcMonths.map(im => ({ ...im, rate: IPC[im.ipcKey] }));
+      if (rateEntries.some(e => e.rate === undefined)) break;
+
+      // Compound the 3 rates
+      const quarterFactor = rateEntries.reduce((f, e) => f * (1 + e.rate / 100), 1.0);
+      cumFactor *= quarterFactor;
+      const adjustedPay = base * cumFactor;
+
+      schedule.push({
+        label:         `${MONTH_NAMES_ES[m-1]} ${y}`,
+        freq:          'quarterly',
+        // Array of { adjMonth label, ipcKey label, rate }
+        rateEntries:   rateEntries.map(e => ({
+          adjLabel: `${MONTH_NAMES_ES[e.adjMonth-1]} ${e.adjYear}`,
+          ipcLabel: `${MONTH_NAMES_ES[parseInt(e.ipcKey.split('-')[1])-1]} ${e.ipcKey.split('-')[0]}`,
+          rate:     e.rate,
+        })),
+        quarterFactor,
+        cumFactor,
+        adjustedPay,
+      });
+
+    } else {
+      // Monthly: single rate, lagged 2 months
+      const ipcKey = applicableIpcKey(y, m);
+      const rate = IPC[ipcKey];
+      if (rate === undefined) break;
+
+      const factor = 1 + rate / 100;
+      cumFactor *= factor;
+      const adjustedPay = base * cumFactor;
+
+      schedule.push({
+        label:    `${MONTH_NAMES_ES[m-1]} ${y}`,
+        freq:     'monthly',
+        ipcKey,
+        ipcLabel: `${MONTH_NAMES_ES[parseInt(ipcKey.split('-')[1])-1]} ${ipcKey.split('-')[0]}`,
+        rate,
+        factor,
+        cumFactor,
+        adjustedPay,
+      });
+    }
+
+    m += step;
+  }
+  return schedule;
+}
+
+// Returns the current effective payment (last entry in schedule, or base if no adjustments yet)
+function currentAdjustedPay(startStr, basePay, freq) {
+  const sched = buildIpcSchedule(startStr, basePay, freq);
+  if (!sched.length) return parseFloat(basePay) || 0;
+  return sched[sched.length - 1].adjustedPay;
+}
+
+
+const S = {
+  view: 'dashboard',
+  selProp: null,
+  selTab: 'overview',
+  targetPropId: null,
+  pendingFile: null,
+  props: [
+    {
+      id:1, name:'Palermo Commercial Tower', type:'Comercial', surface:1200,
+      addr:'Av. del Libertador 2850', city:'Buenos Aires', neigh:'Palermo',
+      notes:'Edificio de oficinas con 4 pisos. Ascensor y estacionamiento incluidos.',
+      ablPartida:'412350', ablDv:'3', aysa:'00412350', elecCo:'Edesur', elecId:'00987654',
+      tenant:{company:'Grupo Clarín S.A.',holder:'Martín Rodríguez',guarantor:'Patricia Fernández',cuit:'20-28456789-3',
+        start:'2023-01-01',end:'2026-12-31',pay:'8500',deposit:'17000',depositCur:'USD',ipcFreq:'quarterly',cur:'USD',email:'admin@grupoclarin.com',phone:'11 4567-8900'},
+      docs:[
+        {name:'Escritura notarial',cat:'Escritura',type:'PDF',date:'2018-05-10'},
+        {name:'Plano planta baja',cat:'Plano',type:'PDF',date:'2018-05-10'},
+        {name:'Contrato de locación',cat:'Contrato de alquiler',type:'PDF',date:'2023-01-01'},
+        {name:'Seguro edilicio 2024',cat:'Seguro',type:'PDF',date:'2024-01-15'},
+      ]
+    },
+    {
+      id:2, name:'Recoleta Apartment 4B', type:'Residencial', surface:85,
+      addr:'Juncal 3400, 4° B', city:'Buenos Aires', neigh:'Recoleta',
+      notes:'Departamento de dos habitaciones, cocina renovada, seguridad 24h.',
+      ablPartida:'289741', ablDv:'1', aysa:'00289741', elecCo:'Edenor', elecId:'00123456',
+      tenant:{company:'',holder:'Carolina Ibáñez',guarantor:'Jorge Ibáñez',cuit:'27-31987654-0',
+        start:'2024-03-01',end:'2026-02-28',pay:'1500',deposit:'3000',depositCur:'ARS',ipcFreq:'monthly',cur:'USD',email:'carolina.ibanez@gmail.com',phone:'11 6234-5678'},
+      docs:[
+        {name:'Escritura 1995',cat:'Escritura',type:'PDF',date:'1995-11-20'},
+        {name:'Plano APH Recoleta',cat:'Plano',type:'Imagen',date:'2020-03-01'},
+        {name:'Contrato alquiler 2024',cat:'Contrato de alquiler',type:'PDF',date:'2024-03-01'},
+      ]
+    },
+    {
+      id:3, name:'San Isidro Warehouse', type:'Industrial', surface:3400,
+      addr:'Ruta 8 km 42', city:'San Isidro', neigh:'Parque industrial',
+      notes:'Galpón de techos altos. 3 docks de carga. Corriente trifásica.',
+      tenant:null,
+      docs:[
+        {name:'Plano industrial',cat:'Plano',type:'PDF',date:'2015-07-08'},
+        {name:'Habilitación municipal',cat:'Otro',type:'PDF',date:'2022-01-10'},
+      ]
+    }
+  ]
+};
+
+function setView(v){ S.view=v; S.selProp=null; render(); }
+function selProp(id){ S.selProp=id; S.view='properties'; S.selTab='overview'; render(); }
+function setTab(t){ S.selTab=t; render(); }
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function openDeleteProp(pid, e){
+  if(e){ e.stopPropagation(); }
+  S.targetPropId = pid;
+  const p = S.props.find(x=>x.id===pid);
+  document.getElementById('delete-prop-name').textContent = p.name;
+  document.getElementById('delete-prop-detail').textContent =
+    [p.neigh, p.city].filter(Boolean).join(', ') +
+    (p.tenant ? ' · Inquilino activo: '+(p.tenant.company||p.tenant.holder) : ' · Vacante') +
+    ' · '+p.docs.length+' documento'+(p.docs.length!==1?'s':'');
+  openModal('modal-delete');
+}
+
+function confirmDelete(){
+  S.props = S.props.filter(x=>x.id!==S.targetPropId);
+  if(S.selProp===S.targetPropId){ S.selProp=null; S.view='properties'; }
+  S.targetPropId=null;
+  closeModal('modal-delete');
+  render();
+}
+
+function openAddProp(){
+  document.getElementById('prop-modal-title').textContent = 'Añadir nueva propiedad';
+  document.getElementById('p-edit-id').value = '';
+  ['p-name','p-addr','p-city','p-neigh','p-notes','p-abl-partida','p-abl-dv','p-aysa','p-elec-id'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-surface').value='';
+  document.getElementById('p-type').value='Comercial';
+  document.getElementById('p-elec-co').value='Edesur';
+  openModal('modal-prop');
+}
+
+function openEditProp(pid, e){
+  if(e) e.stopPropagation();
+  const p = S.props.find(x=>x.id===pid);
+  if(!p) return;
+  document.getElementById('prop-modal-title').textContent = 'Editar propiedad';
+  document.getElementById('p-edit-id').value = pid;
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-type').value = p.type;
+  document.getElementById('p-surface').value = p.surface||'';
+  document.getElementById('p-addr').value = p.addr;
+  document.getElementById('p-city').value = p.city;
+  document.getElementById('p-neigh').value = p.neigh;
+  document.getElementById('p-notes').value = p.notes||'';
+  document.getElementById('p-abl-partida').value = p.ablPartida||'';
+  document.getElementById('p-abl-dv').value = p.ablDv||'';
+  document.getElementById('p-aysa').value = p.aysa||'';
+  document.getElementById('p-elec-co').value = p.elecCo||'Edesur';
+  document.getElementById('p-elec-id').value = p.elecId||'';
+  openModal('modal-prop');
+}
+
+function saveProp(){
+  const name=document.getElementById('p-name').value.trim();
+  if(!name){alert('Por favor, ingresa un nombre para la propiedad.');return;}
+  const editId = document.getElementById('p-edit-id').value;
+  const fields = {
+    name, type:document.getElementById('p-type').value,
+    surface:parseInt(document.getElementById('p-surface').value)||0,
+    addr:document.getElementById('p-addr').value,
+    city:document.getElementById('p-city').value||'Buenos Aires',
+    neigh:document.getElementById('p-neigh').value,
+    notes:document.getElementById('p-notes').value,
+    ablPartida:document.getElementById('p-abl-partida').value.trim(),
+    ablDv:document.getElementById('p-abl-dv').value.trim(),
+    aysa:document.getElementById('p-aysa').value.trim(),
+    elecCo:document.getElementById('p-elec-co').value,
+    elecId:document.getElementById('p-elec-id').value.trim(),
+  };
+  if(editId){
+    // Edit existing
+    const p = S.props.find(x=>x.id===parseInt(editId));
+    if(p) Object.assign(p, fields);
+    closeModal('modal-prop');
+    render();
+  } else {
+    // Add new
+    const np={id:Date.now(), ...fields, tenant:null, docs:[]};
+    S.props.push(np);
+    closeModal('modal-prop');
+    S.selProp=np.id; S.view='properties'; S.selTab='overview';
+    render();
+  }
+}
+
+function openAddTenant(pid){
+  S.targetPropId=pid;
+  const p=S.props.find(x=>x.id===pid);
+  document.getElementById('tenant-modal-title').textContent=(p.tenant?'Editar':'Añadir')+' inquilino — '+p.name;
+  const t=p.tenant||{};
+  document.getElementById('t-company').value=t.company||'';
+  document.getElementById('t-holder').value=t.holder||'';
+  document.getElementById('t-guarantor').value=t.guarantor||'';
+  document.getElementById('t-cuit').value=t.cuit||'';
+  document.getElementById('t-start').value=t.start||'';
+  document.getElementById('t-end').value=t.end||'';
+  document.getElementById('t-pay').value=t.pay||'';
+  document.getElementById('t-cur').value=t.cur||'USD';
+  document.getElementById('t-deposit').value=t.deposit||'';
+  document.getElementById('t-deposit-cur').value=t.depositCur||t.cur||'USD';
+  document.getElementById('t-ipc-freq').value=t.ipcFreq||'monthly';
+  document.getElementById('t-email').value=t.email||'';
+  document.getElementById('t-phone').value=t.phone||'';
+  document.getElementById('ai-status').textContent='Sube un contrato de alquiler en PDF — Claude extraerá automáticamente todos los datos del inquilino y del contrato.';
+  document.getElementById('ai-preview').style.display='none';
+  openModal('modal-tenant');
+}
+
+function openAddDoc(pid){
+  S.targetPropId=pid; S.pendingFile=null;
+  document.getElementById('d-name').value='';
+  document.getElementById('doc-file-preview').style.display='none';
+  openModal('modal-doc');
+}
+
+function saveTenant(){
+  const p=S.props.find(x=>x.id===S.targetPropId);
+  if(!p)return;
+  p.tenant={company:document.getElementById('t-company').value,holder:document.getElementById('t-holder').value,
+    guarantor:document.getElementById('t-guarantor').value,cuit:document.getElementById('t-cuit').value,
+    start:document.getElementById('t-start').value,
+    end:document.getElementById('t-end').value,pay:document.getElementById('t-pay').value,
+    deposit:document.getElementById('t-deposit').value,
+    depositCur:document.getElementById('t-deposit-cur').value,
+    ipcFreq:document.getElementById('t-ipc-freq').value,
+    cur:document.getElementById('t-cur').value,email:document.getElementById('t-email').value,
+    phone:document.getElementById('t-phone').value};
+  closeModal('modal-tenant');
+  render();
+}
+
+function pickDocFile(){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='.pdf,.doc,.docx,.png,.jpg,.jpeg,.gif,.xls,.xlsx,.ppt,.pptx';
+  inp.onchange=e=>{
+    const f=e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      S.pendingFile = { name: f.name, dataUrl: ev.target.result, mime: f.type, size: f.size };
+      const el=document.getElementById('doc-file-preview');
+      el.style.display='block';
+      const kb = (f.size/1024).toFixed(0);
+      el.innerHTML=`<i class="ti ti-file-check" style="margin-right:4px;color:var(--green)"></i>${f.name} <span style="color:var(--text2)">(${kb} KB)</span>`;
+      if(!document.getElementById('d-name').value) document.getElementById('d-name').value=f.name.replace(/\.[^.]+$/,'');
+    };
+    reader.readAsDataURL(f);
+  };
+  inp.click();
+}
+
+function saveDoc(){
+  const p=S.props.find(x=>x.id===S.targetPropId);
+  if(!p) return;
+  const name=document.getElementById('d-name').value.trim()||(S.pendingFile&&S.pendingFile.name)||'Documento sin título';
+  const doc = {
+    id: Date.now(),
+    name,
+    cat: document.getElementById('d-cat').value,
+    type: document.getElementById('d-type').value,
+    date: new Date().toISOString().slice(0,10),
+    dataUrl: S.pendingFile ? S.pendingFile.dataUrl : null,
+    mime: S.pendingFile ? S.pendingFile.mime : null,
+    size: S.pendingFile ? S.pendingFile.size : null,
+  };
+  p.docs.push(doc);
+  S.pendingFile=null;
+  closeModal('modal-doc');
+  render();
+}
+
+function openDoc(propId, docId){
+  const p = S.props.find(x=>x.id===propId);
+  if(!p) return;
+  const d = p.docs.find(x=>x.id===docId);
+  if(!d || !d.dataUrl){ showToast('No hay ningún archivo adjunto a este documento', 'error'); return; }
+
+  // Images and PDFs: open in new tab
+  const viewable = d.mime && (d.mime.startsWith('image/') || d.mime === 'application/pdf');
+  if(viewable){
+    const win = window.open();
+    if(d.mime.startsWith('image/')){
+      win.document.write(`<html><body style="margin:0;background:#111;display:flex;justify-content:center;align-items:center;min-height:100vh">
+        <img src="${d.dataUrl}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`);
+    } else {
+      win.document.write(`<html><body style="margin:0"><embed src="${d.dataUrl}" type="application/pdf" width="100%" height="100%"
+        style="position:fixed;inset:0"></body></html>`);
+    }
+  } else {
+    // Everything else: download
+    const a = document.createElement('a');
+    a.href = d.dataUrl;
+    a.download = d.name + (d.mime ? '' : '');
+    a.click();
+  }
+}
+
+function deleteDoc(propId, docId, e){
+  if(e) e.stopPropagation();
+  const p = S.props.find(x=>x.id===propId);
+  if(!p) return;
+  const d = p.docs.find(x=>x.id===docId);
+  if(!d) return;
+  if(!confirm(`¿Eliminar "${d.name}"?`)) return;
+  p.docs = p.docs.filter(x=>x.id!==docId);
+  render();
+}
+
+async function handleLeasePDF(e){
+  const file=e.target.files[0]; if(!file) return;
+  const statusEl=document.getElementById('ai-status');
+  statusEl.innerHTML='Leyendo contrato<span class="dots"><span></span><span></span><span></span></span>';
+  try{
+    const b64=await new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=()=>res(r.result.split(',')[1]);
+      r.onerror=()=>rej();
+      r.readAsDataURL(file);
+    });
+    const resp=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',
+        content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+        {type:'text',text:'Extract from this lease agreement and return ONLY valid JSON (no markdown): {"company":"","holder":"","guarantor":"","cuit":"contract holder CUIT/CUIL in format NN-NNNNNNNN-N","phone":"contract holder phone number if present","start":"YYYY-MM-DD","end":"YYYY-MM-DD","pay":"numeric only","cur":"USD or ARS or EUR"}. Empty string if not found.'}]}]})});
+    const data=await resp.json();
+    const text=data.content.map(i=>i.text||'').join('');
+    let parsed;
+    try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
+    catch{statusEl.textContent='No se pudo procesar — por favor, completa manualmente.';return;}
+    document.getElementById('t-company').value=parsed.company||'';
+    document.getElementById('t-holder').value=parsed.holder||'';
+    document.getElementById('t-guarantor').value=parsed.guarantor||'';
+    document.getElementById('t-cuit').value=parsed.cuit||'';
+    document.getElementById('t-phone').value=parsed.phone||'';
+    document.getElementById('t-start').value=parsed.start||'';
+    document.getElementById('t-end').value=parsed.end||'';
+    document.getElementById('t-pay').value=parsed.pay||'';
+    if(parsed.cur)document.getElementById('t-cur').value=parsed.cur;
+    const prev=document.getElementById('ai-preview');
+    prev.style.display='block';
+    prev.innerHTML='<div class="ai-preview">'+
+      [['Empresa',parsed.company],['Titular',parsed.holder],['CUIT',parsed.cuit],['Teléfono',parsed.phone],['Garante',parsed.guarantor],['Inicio',parsed.start],['Fin',parsed.end],['Pago',parsed.cur+' '+parsed.pay]]
+      .map(([k,v])=>`<div class="ai-field"><div class="ai-key">${k}</div><div class="ai-val">${v||'—'}</div></div>`).join('')+'</div>';
+    statusEl.innerHTML='<i class="ti ti-check" style="color:#2dd4a0;margin-right:4px"></i>Extraído — revisa y ajusta a continuación.';
+  }catch(err){statusEl.textContent='Error: '+err.message+'. Completa manualmente.';}
+}
+
+function fmtDate(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}
+function initials(n){return(n||'').split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase()||'?';}
+function progress(s,e){const sd=new Date(s),ed=new Date(e),n=new Date();return Math.min(100,Math.max(0,Math.round((n-sd)/(ed-sd)*100)));}
+function monthsLeft(e){if(!e)return 0;const ed=new Date(e),n=new Date();return Math.max(0,(ed.getFullYear()-n.getFullYear())*12+(ed.getMonth()-n.getMonth()));}
+function docIco(t){return{PDF:{cls:'doc-icon-pdf',i:'ti-file-type-pdf'},Word:{cls:'doc-icon-doc',i:'ti-file-type-doc'},Imagen:{cls:'doc-icon-img',i:'ti-photo'}}[t]||{cls:'doc-icon-other',i:'ti-file'};}
+
+function renderDash(){
+  const total=S.props.length,occ=S.props.filter(p=>p.tenant).length;
+  const incomeByCur = {};
+  S.props.forEach(p=>{
+    if(!p.tenant) return;
+    const pay = currentAdjustedPay(p.tenant.start,p.tenant.pay,p.tenant.ipcFreq||'monthly');
+    const cur = p.tenant.cur||'USD';
+    incomeByCur[cur] = (incomeByCur[cur]||0) + pay;
+  });
+  const incomeParts = Object.entries(incomeByCur)
+    .sort(([a],[b]) => (a==='ARS'?-1:b==='ARS'?1:a.localeCompare(b)))
+    .map(([cur,amt]) => `${cur} ${Math.round(amt).toLocaleString('es-AR')}`);
+  const docs=S.props.reduce((s,p)=>s+p.docs.length,0);
+  return`<div class="topbar"><h2>Panel de control</h2><button class="btn btn-primary" onclick="openAddProp()"><i class="ti ti-plus" aria-hidden="true"></i> Añadir propiedad</button></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total de propiedades</div><div class="stat-value">${total}</div><div class="stat-sub">En portafolio</div></div>
+    <div class="stat-card"><div class="stat-label">Ocupadas</div><div class="stat-value">${occ}</div><div class="stat-sub">${total-occ} vacantes</div></div>
+    <div class="stat-card">
+      <div class="stat-label">Ingreso mensual</div>
+      ${incomeParts.length
+        ? `<div class="stat-value" style="font-size:${incomeParts.length>1?'17px':'22px'}">${incomeParts.join(' · ')}</div>`
+        : `<div class="stat-value">—</div>`}
+      <div class="stat-sub">Contratos activos</div>
+    </div>
+    <div class="stat-card"><div class="stat-label">Documentos</div><div class="stat-value">${docs}</div><div class="stat-sub">En todo el portafolio</div></div>
+  </div>
+  <div class="sec-title">Propiedades</div>
+  <div class="prop-grid">
+    ${S.props.map(p=>`<div class="prop-card" onclick="selProp(${p.id})">
+      <div class="prop-header">
+        <div><div class="prop-name">${p.name}</div><div class="prop-addr"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:11px"></i> ${p.neigh}, ${p.city}</div></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="badge ${p.tenant?'badge-on':'badge-off'}">${p.tenant?'Ocupada':'Vacante'}</span>
+          <button class="btn btn-sm" onclick="openEditProp(${p.id},event)" title="Editar propiedad" style="padding:3px 6px;line-height:1"><i class="ti ti-edit" aria-hidden="true" style="font-size:13px"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="openDeleteProp(${p.id},event)" title="Eliminar propiedad" style="padding:3px 6px;line-height:1"><i class="ti ti-trash" aria-hidden="true" style="font-size:13px"></i></button>
+        </div>
+      </div>
+      <div class="prop-meta"><span><i class="ti ti-building" aria-hidden="true"></i> ${p.type}</span><span><i class="ti ti-ruler" aria-hidden="true"></i> ${p.surface} m²</span><span><i class="ti ti-file" aria-hidden="true"></i> ${p.docs.length}</span></div>
+      ${p.tenant?`<div class="prop-tenant-line"><i class="ti ti-user" aria-hidden="true" style="font-size:12px"></i> ${p.tenant.company||p.tenant.holder} · ${p.tenant.cur} ${Math.round(currentAdjustedPay(p.tenant.start,p.tenant.pay,p.tenant.ipcFreq||'monthly')).toLocaleString()}/mo</div>`:'<div style="font-size:12px;color:var(--text2)">Sin inquilino asignado</div>'}
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderPropList(){
+  if(S.selProp){
+    const p=S.props.find(x=>x.id===S.selProp); if(!p) return '';
+    const t=p.tenant;
+    return`<div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="btn" onclick="S.selProp=null;render()"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+        <h2>${p.name}</h2>
+        <span class="badge ${t?'badge-on':'badge-off'}">${t?'Ocupada':'Vacante'}</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="openEditProp(${p.id})"><i class="ti ti-edit" aria-hidden="true"></i> Editar</button>
+        <button class="btn btn-danger" onclick="openDeleteProp(${p.id})"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar</button>
+        <button class="btn" onclick="openAddDoc(${p.id})"><i class="ti ti-upload" aria-hidden="true"></i> Añadir documento</button>
+        <button class="btn btn-primary" onclick="openAddTenant(${p.id})"><i class="ti ti-user-plus" aria-hidden="true"></i> ${t?'Editar inquilino':'Añadir inquilino'}</button>
+      </div>
+    </div>
+    <div class="detail-panel">
+      <div class="detail-tabs">
+        ${['overview','tenant','documents'].map(tab=>`<div class="tab ${S.selTab===tab?'active':''}" onclick="setTab('${tab}')">${tab==='overview'?'Resumen':tab==='tenant'?'Inquilino':'Documentos'}</div>`).join('')}
+      </div>
+      <div class="detail-body">
+        ${S.selTab==='overview'?renderOverview(p):''}
+        ${S.selTab==='tenant'?renderTenantTab(p):''}
+        ${S.selTab==='documents'?renderDocsTab(p):''}
+      </div>
+    </div>`;
+  }
+  return`<div class="topbar"><h2>Propiedades</h2><button class="btn btn-primary" onclick="openAddProp()"><i class="ti ti-plus" aria-hidden="true"></i> Añadir propiedad</button></div>
+  <div class="prop-grid">
+    ${S.props.map(p=>`<div class="prop-card" onclick="selProp(${p.id})">
+      <div class="prop-header">
+        <div><div class="prop-name">${p.name}</div><div class="prop-addr"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:11px"></i> ${p.neigh}, ${p.city}</div></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="badge ${p.tenant?'badge-on':'badge-off'}">${p.tenant?'Ocupada':'Vacante'}</span>
+          <button class="btn btn-sm" onclick="openEditProp(${p.id},event)" title="Editar propiedad" style="padding:3px 6px;line-height:1"><i class="ti ti-edit" aria-hidden="true" style="font-size:13px"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="openDeleteProp(${p.id},event)" title="Eliminar propiedad" style="padding:3px 6px;line-height:1"><i class="ti ti-trash" aria-hidden="true" style="font-size:13px"></i></button>
+        </div>
+      </div>
+      <div class="prop-meta"><span><i class="ti ti-building" aria-hidden="true"></i> ${p.type}</span><span><i class="ti ti-ruler" aria-hidden="true"></i> ${p.surface} m²</span></div>
+      ${p.tenant?`<div class="prop-tenant-line"><i class="ti ti-user" aria-hidden="true" style="font-size:12px"></i> ${p.tenant.company||p.tenant.holder}</div>`:'<div style="font-size:12px;color:var(--text2)">Sin inquilino</div>'}
+    </div>`).join('')}
+    <div class="prop-card prop-card-add" onclick="openAddProp()"><i class="ti ti-plus" aria-hidden="true" style="font-size:20px"></i> Añadir propiedad</div>
+  </div>`;
+}
+
+function renderOverview(p){
+  const hasBills = p.ablPartida || p.aysa || p.elecId;
+  return`<div class="info-grid">
+    <div class="info-field"><div class="info-label">Tipo</div><div class="info-value">${p.type}</div></div>
+    <div class="info-field"><div class="info-label">Superficie</div><div class="info-value">${p.surface} m²</div></div>
+    <div class="info-field"><div class="info-label">Dirección</div><div class="info-value">${p.addr}</div></div>
+    <div class="info-field"><div class="info-label">Ubicación</div><div class="info-value">${p.neigh}, ${p.city}</div></div>
+  </div>
+  ${p.notes?`<div class="note-box" style="margin-bottom:16px">${p.notes}</div>`:''}
+  <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:${p.notes?'0':'4px'}">
+    <div style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+      <i class="ti ti-receipt" aria-hidden="true"></i> Impuestos y Servicios
+    </div>
+    ${hasBills ? `
+    <div class="info-grid">
+      <div class="info-field">
+        <div class="info-label">ABL</div>
+        <div class="info-value">${p.ablPartida ? `Partida ${p.ablPartida}${p.ablDv ? ' — DV '+p.ablDv : ''}` : '—'}</div>
+      </div>
+      <div class="info-field">
+        <div class="info-label">AySA</div>
+        <div class="info-value">${p.aysa || '—'}</div>
+      </div>
+      <div class="info-field">
+        <div class="info-label">${p.elecCo||'Edesur/Edenor'}</div>
+        <div class="info-value">${p.elecId || '—'}</div>
+      </div>
+    </div>` : `<div style="font-size:12px;color:var(--text2)">Aún no se añadieron cuentas de servicios. Haz clic en <strong>Editar</strong> para añadirlas.</div>`}
+  </div>`;
+}
+
+function renderTenantTab(p){
+  if(!p.tenant) return`<div class="empty"><i class="ti ti-user-off" aria-hidden="true"></i><p>No hay inquilino asignado a esta propiedad.</p><button class="btn btn-primary" onclick="openAddTenant(${p.id})"><i class="ti ti-user-plus" aria-hidden="true"></i> Añadir inquilino</button></div>`;
+  const t=p.tenant, pct=progress(t.start,t.end), ml=monthsLeft(t.end);
+  const freq = t.ipcFreq||'monthly';
+  const basePay = parseFloat(t.pay||0);
+  const sched = buildIpcSchedule(t.start, basePay, freq);
+  const currentPay = sched.length ? sched[sched.length-1].adjustedPay : basePay;
+  const totalIncrease = basePay > 0 ? ((currentPay/basePay - 1)*100) : 0;
+
+  // Current applicable IPC info (for today = June 2026, applicable = April 2026)
+  const now = new Date();
+  const curIpcKey = applicableIpcKey(now.getFullYear(), now.getMonth()+1);
+  const curIpcRate = IPC[curIpcKey];
+  const curIpcLabel = curIpcKey ? `${MONTH_NAMES_ES[parseInt(curIpcKey.split('-')[1])-1]} ${curIpcKey.split('-')[0]}` : '—';
+
+  // Show last 6 adjustments by default, all if expanded (handled via simple inline toggle)
+  const showAll = p._ipcExpanded;
+  const displaySched = showAll ? sched : sched.slice(-6);
+  const hiddenCount = sched.length - 6;
+
+  return`
+  <div class="contract-strip">
+    <div class="cs-left">
+      <div class="cs-label">Período de alquiler</div>
+      <div class="cs-dates">${fmtDate(t.start)} → ${fmtDate(t.end)} · ${ml} meses restantes</div>
+      <div class="cs-bar"><div class="cs-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div style="display:flex;gap:20px;flex-shrink:0;text-align:right">
+      <div class="cs-right">
+        <div class="cs-payment-label">Alquiler base</div>
+        <div class="cs-payment" style="font-size:14px;opacity:.7">${t.cur} ${basePay.toLocaleString()}</div>
+      </div>
+      <div class="cs-right" style="border-left:1px solid rgba(45,212,160,0.2);padding-left:20px">
+        <div class="cs-payment-label">Alquiler actual</div>
+        <div class="cs-payment">${t.cur} ${Math.round(currentPay).toLocaleString()}</div>
+      </div>
+      <div class="cs-right" style="border-left:1px solid rgba(45,212,160,0.2);padding-left:20px">
+        <div class="cs-payment-label">Depósito</div>
+        <div class="cs-payment" style="font-size:16px">${t.deposit ? (t.depositCur||t.cur)+' '+parseFloat(t.deposit).toLocaleString() : '—'}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ipc-panel">
+    <div class="ipc-header">
+      <div class="ipc-title">
+        <i class="ti ti-chart-line" aria-hidden="true" style="color:var(--accent)"></i>
+        Actualización IPC
+        <span class="ipc-badge">${freq === 'monthly' ? 'Mensual' : 'Trimestral'}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text2)">${sched.length} actualización${sched.length!==1?'es':''} aplicada${sched.length!==1?'s':''} desde el inicio</div>
+    </div>
+    <div class="ipc-current">
+      <div class="ipc-cell">
+        <div class="ipc-cell-label">IPC aplicable</div>
+        ${freq === 'quarterly' && sched.length > 0 ? (() => {
+          const last = sched[sched.length-1];
+          const total = ((last.quarterFactor-1)*100).toFixed(1);
+          const rateStr = last.rateEntries.map(e=>`+${e.rate.toFixed(1)}%`).join(' × ');
+          return `<div class="ipc-cell-value highlight">+${total}%</div>
+                  <div class="ipc-cell-sub">${rateStr}</div>`;
+        })() : `
+        <div class="ipc-cell-value highlight">${curIpcRate !== undefined ? '+'+curIpcRate.toFixed(1)+'%' : '—'}</div>
+        <div class="ipc-cell-sub">INDEC ${curIpcLabel}</div>`}
+      </div>
+      <div class="ipc-cell">
+        <div class="ipc-cell-label">Alquiler actual</div>
+        <div class="ipc-cell-value green">${t.cur} ${Math.round(currentPay).toLocaleString()}</div>
+        <div class="ipc-cell-sub">Base: ${t.cur} ${basePay.toLocaleString()}</div>
+      </div>
+      <div class="ipc-cell">
+        <div class="ipc-cell-label">Aumento total</div>
+        <div class="ipc-cell-value" style="color:var(--amber)">+${totalIncrease.toFixed(1)}%</div>
+        <div class="ipc-cell-sub">Desde el ${fmtDate(t.start)}</div>
+      </div>
+    </div>
+    ${sched.length > 0 ? `
+    <div class="ipc-history">
+      <div class="ipc-history-label">Historial de actualizaciones</div>
+      <table class="ipc-table">
+        <thead><tr>
+          <th>Período</th>
+          <th>${freq==='quarterly'?'Meses (act → IPC)':'IPC utilizado'}</th>
+          <th>Tasa(s)</th>
+          <th>Alquiler ajustado</th>
+          <th>Aumento acum.</th>
+        </tr></thead>
+        <tbody>
+          ${displaySched.map((r,i,arr)=>{
+            const isCurrent = (i === arr.length-1 && !showAll) || (showAll && i === sched.length-1);
+            const currentBadge = isCurrent ? ' <span style="font-size:9px;color:var(--accent);margin-left:4px">ACTUAL</span>' : '';
+
+            if (r.freq === 'quarterly') {
+              // Show each of the 3 component months stacked
+              const rateLines = r.rateEntries.map(e =>
+                `<span style="display:block;white-space:nowrap">${e.adjLabel} → ${e.ipcLabel}</span>`
+              ).join('');
+              const ratePcts = r.rateEntries.map(e =>
+                `<span style="display:block">+${e.rate.toFixed(1)}%</span>`
+              ).join('');
+              const quarterTotal = ((r.quarterFactor - 1) * 100).toFixed(1);
+              return `<tr class="${isCurrent?'current-row':''}">
+                <td style="vertical-align:top">${r.label}${currentBadge}</td>
+                <td style="color:var(--text2);font-size:10px;line-height:1.6">${rateLines}</td>
+                <td class="rate-pos" style="font-size:10px;line-height:1.6;vertical-align:top">
+                  ${ratePcts}
+                  <span style="display:block;border-top:1px solid var(--border);margin-top:2px;padding-top:2px;color:var(--amber)">=${quarterTotal}%</span>
+                </td>
+                <td style="vertical-align:top">${t.cur} ${Math.round(r.adjustedPay).toLocaleString()}</td>
+                <td style="color:var(--text2);vertical-align:top">+${((r.cumFactor-1)*100).toFixed(1)}%</td>
+              </tr>`;
+            } else {
+              return `<tr class="${isCurrent?'current-row':''}">
+                <td>${r.label}${currentBadge}</td>
+                <td style="color:var(--text2)">${r.ipcLabel}</td>
+                <td class="rate-pos">+${r.rate.toFixed(1)}%</td>
+                <td>${t.cur} ${Math.round(r.adjustedPay).toLocaleString()}</td>
+                <td style="color:var(--text2)">+${((r.cumFactor-1)*100).toFixed(1)}%</td>
+              </tr>`;
+            }
+          }).join('')}
+        </tbody>
+      </table>
+      ${sched.length > 6 ? `<div class="ipc-toggle" onclick="S.props.find(x=>x.id===${p.id})._ipcExpanded=!S.props.find(x=>x.id===${p.id})._ipcExpanded;render()">
+        <i class="ti ti-${showAll?'chevron-up':'chevron-down'}" aria-hidden="true"></i>
+        ${showAll ? 'Mostrar menos' : `Mostrar las ${sched.length} actualizaciones`}
+      </div>` : ''}
+    </div>` : `<div style="padding:14px 16px;font-size:12px;color:var(--text2)">Aún no se han aplicado actualizaciones — la primera será después de ${freq==='quarterly'?'3 meses':'1 mes'} de inicio del contrato.</div>`}
+  </div>
+
+  <div class="tenant-card">
+    <div class="tenant-head">
+      <div class="avatar">${initials(t.holder)}</div>
+      <div><div class="tenant-name">${t.holder||'—'}</div><div class="tenant-role">Titular del contrato</div></div>
+    </div>
+    <div class="tenant-grid">
+      <div class="tenant-field"><div class="tenant-label">Empresa</div><div class="tenant-value">${t.company||'—'}</div></div>
+      <div class="tenant-field"><div class="tenant-label">CUIT/CUIL</div><div class="tenant-value">${t.cuit||'—'}</div></div>
+      <div class="tenant-field"><div class="tenant-label">Email</div><div class="tenant-value">${t.email||'—'}</div></div>
+      <div class="tenant-field"><div class="tenant-label">Teléfono</div><div class="tenant-value">${t.phone||'—'}</div></div>
+      <div class="tenant-field"><div class="tenant-label">Garante</div><div class="tenant-value">${t.guarantor||'—'}</div></div>
+      <div class="tenant-field"><div class="tenant-label">Fecha de inicio</div><div class="tenant-value">${fmtDate(t.start)}</div></div>
+    </div>
+  </div>
+  <button class="btn" onclick="openAddTenant(${p.id})"><i class="ti ti-edit" aria-hidden="true"></i> Editar inquilino</button>`;
+}
+
+function renderDocsTab(p){
+  return`<div class="sec-title">Documentos (${p.docs.length}) <button class="btn btn-sm" onclick="openAddDoc(${p.id})"><i class="ti ti-plus" aria-hidden="true"></i> Añadir</button></div>
+  <div class="doc-list">
+    ${p.docs.map(d=>{
+      const ic=docIco(d.type);
+      const hasFile = !!d.dataUrl;
+      return`<div class="doc-row" onclick="openDoc(${p.id},${d.id})" style="${hasFile?'cursor:pointer':'cursor:default;opacity:.6'}" title="${hasFile?'Clic para abrir':'Sin archivo adjunto'}">
+        <div class="doc-icon ${ic.cls}"><i class="ti ${ic.i}" aria-hidden="true"></i></div>
+        <div style="flex:1">
+          <div class="doc-name">${d.name}</div>
+          <div class="doc-meta">${d.cat} · ${d.type} · ${fmtDate(d.date)}${d.size?' · '+(d.size/1024).toFixed(0)+' KB':''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${hasFile?`<i class="ti ti-external-link" aria-hidden="true" style="color:var(--text2);font-size:15px"></i>`:'<i class="ti ti-paperclip-off" aria-hidden="true" style="color:var(--text2);font-size:15px" title="Sin archivo"></i>'}
+          <button class="btn btn-sm btn-danger" onclick="deleteDoc(${p.id},${d.id},event)" style="padding:3px 6px" title="Eliminar documento"><i class="ti ti-trash" aria-hidden="true" style="font-size:12px"></i></button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  ${p.docs.length===0?`<div class="doc-drop" onclick="openAddDoc(${p.id})"><i class="ti ti-cloud-upload" aria-hidden="true" style="font-size:26px;display:block;margin-bottom:8px"></i>Suelta los documentos aquí</div>`:''}`;
+}
+
+function renderTenants(){
+  const with_t=S.props.filter(p=>p.tenant);
+  return`<div class="topbar"><h2>Inquilinos</h2></div>
+  ${with_t.length===0?`<div class="empty"><i class="ti ti-users" aria-hidden="true"></i><p>Aún no hay inquilinos.</p></div>`:''}
+  ${with_t.map(p=>{
+    const t=p.tenant, ml=monthsLeft(t.end);
+    const urg=ml<=2?'critical':ml<=6?'urgent':'';
+    return`<div class="tenant-list-item" onclick="selProp(${p.id});setTab('tenant')">
+      <div class="tli-left">
+        <div class="avatar">${initials(t.holder)}</div>
+        <div><div class="tli-name">${t.holder}</div><div class="tli-sub">${t.company||'Particular'} · ${p.name}</div></div>
+      </div>
+      <div class="tli-right">
+        <div class="tli-amount">${t.cur} ${parseFloat(t.pay||0).toLocaleString()}/mo</div>
+        <div class="tli-expiry ${urg}">Termina el ${fmtDate(t.end)} · ${ml} meses restantes</div>
+      </div>
+    </div>`;
+  }).join('')}`;
+}
+
+function renderDocuments(){
+  return`<div class="topbar"><h2>Todos los documentos</h2></div>
+  ${S.props.map(p=>{
+    if(!p.docs.length)return'';
+    return`<div style="margin-bottom:28px">
+      <div class="sec-title"><span><i class="ti ti-building" aria-hidden="true" style="margin-right:6px"></i>${p.name}</span>
+        <button class="btn btn-sm" onclick="selProp(${p.id})"><i class="ti ti-arrow-right" aria-hidden="true"></i> Abrir</button>
+      </div>
+      <div class="doc-list">${p.docs.map(d=>{
+        const ic=docIco(d.type);
+        const hasFile = !!d.dataUrl;
+        return`<div class="doc-row" onclick="openDoc(${p.id},${d.id})" style="${hasFile?'cursor:pointer':'cursor:default;opacity:.6'}">
+          <div class="doc-icon ${ic.cls}"><i class="ti ${ic.i}" aria-hidden="true"></i></div>
+          <div style="flex:1"><div class="doc-name">${d.name}</div><div class="doc-meta">${d.cat} · ${d.type} · ${fmtDate(d.date)}${d.size?' · '+(d.size/1024).toFixed(0)+' KB':''}</div></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${hasFile?`<i class="ti ti-external-link" aria-hidden="true" style="color:var(--text2);font-size:15px"></i>`:'<i class="ti ti-paperclip-off" aria-hidden="true" style="color:var(--text2);font-size:15px"></i>'}
+            <button class="btn btn-sm btn-danger" onclick="deleteDoc(${p.id},${d.id},event)" style="padding:3px 6px"><i class="ti ti-trash" aria-hidden="true" style="font-size:12px"></i></button>
+          </div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }).join('')}`;
+}
+
+function renderSidebar(){
+  const el=document.getElementById('sidebar-props');
+  el.innerHTML=S.props.map(p=>`<div class="prop-nav-item ${S.selProp===p.id?'active':''}" onclick="selProp(${p.id})">
+    <span class="status-dot ${p.tenant?'on':'off'}"></span>
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
+  </div>`).join('');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const map={dashboard:0,properties:1,tenants:2,documents:3};
+  const items=document.querySelectorAll('.nav-item');
+  if(items[map[S.view]])items[map[S.view]].classList.add('active');
+}
+
+function render(){
+  const m=document.getElementById('main');
+  if(S.view==='dashboard') m.innerHTML=renderDash();
+  else if(S.view==='properties') m.innerHTML=renderPropList();
+  else if(S.view==='tenants') m.innerHTML=renderTenants();
+  else if(S.view==='documents') m.innerHTML=renderDocuments();
+  renderSidebar();
+}
+
+// ─── PERSISTENCE LAYER ───────────────────────────────────────────────────────
+// Automatically detects whether running via local server (http://localhost:8737)
+// or opened directly as a file (fallback to localStorage).
+// To migrate to the cloud: replace SERVER_API, saveData(), loadData(), uploadFile().
+
+const SERVER_API  = 'http://localhost:8737';
+const STORAGE_KEY = 'propmanager_v1';
+const VIA_SERVER  = location.protocol === 'http:' && location.hostname === 'localhost' && location.port === '8737';
+
+// ── Save ──────────────────────────────────────────────────────────────────────
+async function saveData() {
+  const payload = { props: S.props, savedAt: new Date().toISOString() };
+  if (VIA_SERVER) {
+    try {
+      const r = await fetch(`${SERVER_API}/api/data`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!r.ok) throw new Error(await r.text());
+      updateSaveStatus();
+    } catch(e) {
+      showToast('Error al guardar en servidor: ' + e.message, 'error');
+    }
+  } else {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      updateSaveStatus();
+    } catch(e) {
+      showToast('No se pudo guardar: ' + e.message, 'error');
+    }
+  }
+}
+
+// ── Load ──────────────────────────────────────────────────────────────────────
+async function loadData() {
+  if (VIA_SERVER) {
+    try {
+      const r = await fetch(`${SERVER_API}/api/data`);
+      if (!r.ok) return null;
+      return await r.json();
+    } catch(e) {
+      return null;
+    }
+  } else {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e) {
+      return null;
+    }
+  }
+}
+
+// ── Upload a file ─────────────────────────────────────────────────────────────
+// Returns { fileUrl, size } when via server, or { dataUrl, size } when local.
+async function uploadFile(pendingFile) {
+  if (VIA_SERVER) {
+    const r = await fetch(`${SERVER_API}/api/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: pendingFile.name, dataUrl: pendingFile.dataUrl })
+    });
+    if (!r.ok) throw new Error('Error al subir archivo');
+    return await r.json(); // { fileUrl, filename, size }
+  } else {
+    // Fallback: keep base64 in memory / localStorage
+    return { dataUrl: pendingFile.dataUrl, size: pendingFile.size };
+  }
+}
+
+// ── Delete a file from server ─────────────────────────────────────────────────
+async function deleteFile(fileUrl) {
+  if (!fileUrl || !VIA_SERVER) return;
+  try {
+    await fetch(`${SERVER_API}/api/delete-file`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileUrl })
+    });
+  } catch(e) { /* non-critical */ }
+}
+
+// ── Export / Import (always available as backup) ──────────────────────────────
+function exportData() {
+  const payload = { props: S.props, exportedAt: new Date().toISOString(), version: 1 };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `propmanager-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Copia de seguridad exportada con éxito');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (!parsed.props || !Array.isArray(parsed.props)) throw new Error('Formato de archivo inválido');
+        if (!confirm(`¿Importar ${parsed.props.length} propiedades desde "${file.name}"?\n\nEsto reemplazará todos los datos actuales.`)) return;
+        S.props = parsed.props;
+        await saveData();
+        render();
+        showToast(`Se importaron ${parsed.props.length} propiedades`);
+      } catch(err) {
+        showToast('Error al importar: ' + err.message, 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Auto-save wrappers ────────────────────────────────────────────────────────
+const _saveProp = saveProp;
+saveProp = function() { _saveProp(); saveData(); };
+const _saveTenant = saveTenant;
+saveTenant = function() { _saveTenant(); saveData(); };
+const _confirmDelete = confirmDelete;
+confirmDelete = function() { _confirmDelete(); saveData(); };
+
+// saveDoc and deleteDoc are async — handled separately below
+const _saveDocOrig = saveDoc;
+saveDoc = async function() {
+  const p = S.props.find(x => x.id === S.targetPropId);
+  if (!p) return;
+  const name = document.getElementById('d-name').value.trim() || (S.pendingFile && S.pendingFile.name) || 'Documento sin título';
+  const doc = {
+    id: Date.now(),
+    name,
+    cat: document.getElementById('d-cat').value,
+    type: document.getElementById('d-type').value,
+    date: new Date().toISOString().slice(0, 10),
+    fileUrl: null,
+    dataUrl: null,
+    mime: S.pendingFile ? S.pendingFile.mime : null,
+    size: null,
+  };
+  if (S.pendingFile) {
+    try {
+      const result = await uploadFile(S.pendingFile);
+      doc.fileUrl = result.fileUrl || null;
+      doc.dataUrl = result.dataUrl || null;
+      doc.size    = result.size || S.pendingFile.size;
+    } catch(e) {
+      showToast('Error al subir archivo: ' + e.message, 'error');
+    }
+  }
+  p.docs.push(doc);
+  S.pendingFile = null;
+  closeModal('modal-doc');
+  await saveData();
+  render();
+};
+
+const _deleteDocOrig = deleteDoc;
+deleteDoc = async function(propId, docId, e) {
+  if (e) e.stopPropagation();
+  const p = S.props.find(x => x.id === propId);
+  if (!p) return;
+  const d = p.docs.find(x => x.id === docId);
+  if (!d) return;
+  if (!confirm(`¿Eliminar "${d.name}"?`)) return;
+  if (d.fileUrl) await deleteFile(d.fileUrl);
+  p.docs = p.docs.filter(x => x.id !== docId);
+  await saveData();
+  render();
+};
+
+// ── openDoc: works with both fileUrl (server) and dataUrl (local) ─────────────
+openDoc = function(propId, docId) {
+  const p = S.props.find(x => x.id === propId);
+  if (!p) return;
+  const d = p.docs.find(x => x.id === docId);
+  const src = d && (d.fileUrl || d.dataUrl);
+  if (!src) { showToast('No hay ningún archivo adjunto a este documento', 'error'); return; }
+
+  const viewable = d.mime && (d.mime.startsWith('image/') || d.mime === 'application/pdf');
+  if (d.fileUrl) {
+    // Server mode: browser opens URL directly
+    window.open(d.fileUrl, '_blank');
+  } else if (viewable) {
+    const win = window.open();
+    if (d.mime.startsWith('image/')) {
+      win.document.write(`<html><body style="margin:0;background:#111;display:flex;justify-content:center;align-items:center;min-height:100vh"><img src="${src}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`);
+    } else {
+      win.document.write(`<html><body style="margin:0"><embed src="${src}" type="application/pdf" width="100%" height="100%" style="position:fixed;inset:0"></body></html>`);
+    }
+  } else {
+    const a = document.createElement('a');
+    a.href = src; a.download = d.name; a.click();
+  }
+};
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type='success') {
+  let t = document.getElementById('pm-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'pm-toast';
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 16px;
+      border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;
+      display:flex;align-items:center;gap:8px;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .3s;opacity:0;pointer-events:none`;
+    document.body.appendChild(t);
+  }
+  t.style.background = type === 'error' ? '#3a1a1d' : '#1a2a1a';
+  t.style.border = `1px solid ${type === 'error' ? 'rgba(255,95,109,.35)' : 'rgba(45,212,160,.35)'}`;
+  t.style.color = type === 'error' ? '#ff5f6d' : '#2dd4a0';
+  t.innerHTML = `<i class="ti ti-${type==='error'?'alert-circle':'check'}" aria-hidden="true"></i> ${msg}`;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+}
+
+// ── Save status ───────────────────────────────────────────────────────────────
+function updateSaveStatus() {
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  const now = new Date();
+  const time = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  el.textContent = (VIA_SERVER ? '💾 Servidor · ' : '📦 Local · ') + 'Guardado ' + time;
+}
+
+// ── Patch render to refresh save status ──────────────────────────────────────
+const _render = render;
+render = function() { _render(); updateSaveStatus(); };
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+(async function boot() {
+  const saved = await loadData();
+  if (saved && saved.props && saved.props.length) {
+    S.props = saved.props;
+  }
+  render();
+  if (VIA_SERVER) showToast('Conectado al servidor local');
+})();
+</script>
+</body>
+</html>
